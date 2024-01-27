@@ -1,0 +1,11 @@
+services:
+  mind:
+    image: mrcas/mind
+    container_name: mind
+    hostname: mind
+    ports:
+      - 8451:8080
+    volumes:
+      - ./data/app/db:/app/db
+    environment:
+      TZ: Africa/Cairo

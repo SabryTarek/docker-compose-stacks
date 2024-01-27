@@ -1,0 +1,9 @@
+services:
+  logseq:
+    image: ghcr.io/logseq/logseq-webapp
+    container_name: logseq
+    hostname: logseq
+    restart: unless-stopped
+    ports:
+      - 8200:80
+      - 8443:443

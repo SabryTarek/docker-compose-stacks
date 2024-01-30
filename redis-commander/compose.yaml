@@ -1,0 +1,17 @@
+services:
+  redis-commander:
+    image: ghcr.io/joeferner/redis-commander
+    container_name: redis-commander
+    hostname: redis-commander
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      REDIS_HOSTS: local:redis:6379
+
+
+  redis:
+    container_name: redis
+    hostname: redis
+    image: redis
+

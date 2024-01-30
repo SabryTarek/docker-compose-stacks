@@ -1,0 +1,9 @@
+services:
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    hostname: mailhog
+    restart: unless-stoped
+    ports:
+      - 1025
+      - 8025:8025

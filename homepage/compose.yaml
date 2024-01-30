@@ -1,0 +1,15 @@
+services:
+  homepage:
+    image: ghcr.io/benphelps/homepage
+    container_name: homepage
+    hostname: homepage
+    restart: unless-stopped
+      #   user: 1000:1000 # Optional, change to your user and group IDs for permissions
+    ports:
+      - 1257:3000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
+      - ./data/config/config:/app/config # Make sure your local config directory is exists
+    environment:
+      PUID: 1000
+      PGID: 1000

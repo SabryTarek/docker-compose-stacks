@@ -1,0 +1,41 @@
+services:
+  mobsf:
+    image: opensecurity/mobile-security-framework-mobsf
+    container_name: mobsf
+    hostname: mobsf
+    restart: always
+    expose:
+      - 8000
+    environment:
+      POSTGRES_USER: mobsf
+      POSTGRES_PASSWORD: mobsf
+      POSTGRES_DB: mobsf
+      POSTGRES_HOST: mobsf-db
+    networks:
+      - mobsf
+      - npm
+    depends_on:
+      - mobsf-db
+
+
+  mobsf-db:
+    image: postgres
+    container_name: mobsf-db
+    hostname: mobsf-db
+    restart: always
+    volumes:
+      - ./data/var/lib/postgresql:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: mobsf
+      POSTGRES_PASSWORD: mobsf
+      POSTGRES_DB: mobsf
+    networks:
+        - mobsf
+      
+
+
+
+networks:
+  mobsf:
+  npm:
+    external: true

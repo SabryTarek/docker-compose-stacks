@@ -1,0 +1,136 @@
+services:
+  zammad-railsserver:
+    image: zammad/zammad-docker-compose
+    container_name: zammad-railsserver
+    hostname: zammad-railsserver
+    restart: always
+    volumes:
+      - ./data/opt/zammad:/opt/zammad
+    environment:
+      REDIS_URL: redis://zammad-redis:6379
+      MEMCACHE_SERVERS: zammad-memcached:11211
+    command: ["zammad-railsserver"]
+    depends_on:
+      - zammad-memcached
+      - zammad-postgresql
+      - zammad-redis
+
+
+  zammad-postgresql:
+    image: postgres
+    container_name: zammad-postgresql
+    hostname: zammad-postgresql
+    restart: always
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: zammad
+      POSTGRES_PASSWORD: zammad
+
+
+  zammad-backup:
+    image: postgres
+    restart: always
+    volumes:
+      - ./data/var/tmp/zammad:/var/tmp/zammad
+      - ./data/opt/zammad:/opt/zammad:ro
+      - ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
+    environment:
+      BACKUP_SLEEP: 86400
+      HOLD_DAYS: 10
+      POSTGRESQL_USER: zammad
+      POSTGRESQL_PASSWORD: zammad
+    entrypoint: /usr/local/bin/backup.sh
+    command: ["zammad-backup"]
+    depends_on:
+      - zammad-railsserver
+      - zammad-postgresql
+
+
+  zammad-elasticsearch:
+    image: bitnami/elasticsearch
+    container_name: zammad-elasticsearch
+    hostname: zammad-elasticsearch
+    restart: always
+    volumes:
+      - ./data/bitnami/elasticsearch/data:/bitnami/elasticsearch/data
+
+
+  zammad-init:
+    image: zammad/zammad-docker-compose
+    container_name: zammad-init
+    hostname: zammad-init
+    restart: on-failure
+    environment:
+      REDIS_URL: redis://zammad-redis:6379
+      MEMCACHE_SERVERS: zammad-memcached:11211
+      POSTGRESQL_USER: zammad
+      POSTGRESQL_PASS: zammad
+    volumes:
+      - ./data/opt/zammad:/opt/zammad
+    command: ["zammad-init"]
+    depends_on:
+      - zammad-postgresql
+
+
+  zammad-nginx:
+    image: zammad/zammad-docker-compose
+    container_name: zammad-nginx
+    hostname: zammad-nginx
+    restart: always
+    expose:
+      - 8080
+    volumes:
+      - ./data/opt/zammad:/opt/zammad
+    command: ["zammad-nginx"]
+    depends_on:
+      - zammad-railsserver
+
+
+  zammad-redis:
+    image: redis
+    container_name: zammad-redis
+    hostname: zammad-redis
+    restart: always
+
+
+  zammad-memcached:
+    image: memcached
+    container_name: zammad-memcached
+    hostname: zammad-memcached
+    restart: always
+    command: memcached -m 256M
+
+
+  zammad-scheduler:
+    image: zammad/zammad-docker-compose
+    container_name: zammad-scheduler
+    hostname: zammad-scheduler
+    restart: always
+    volumes:
+      - ./data/opt/zammad:/opt/zammad
+    environment:
+      MEMCACHE_SERVERS: zammad-memcached:11211
+      REDIS_URL: redis://zammad-redis:6379
+    command: ["zammad-scheduler"]
+    depends_on:
+      - zammad-memcached
+      - zammad-railsserver
+      - zammad-redis
+
+
+  zammad-websocket:
+    image: zammad/zammad-docker-compose
+    container_name: zammad-websocket
+    hostname: zammad-websocket
+    restart: always
+    volumes:
+      - ./data/opt/zammad:/opt/zammad
+    environment:
+      MEMCACHE_SERVERS: zammad-memcached:11211
+      REDIS_URL: redis://zammad-redis:6379
+    command: ["zammad-websocket"]
+    depends_on:
+      - zammad-memcached
+      - zammad-railsserver
+      - zammad-redis

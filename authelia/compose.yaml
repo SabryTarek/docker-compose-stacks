@@ -1,0 +1,14 @@
+services:
+  authelia:
+    image: authelia/authelia
+    container_name: authelia
+    hostname: authelia
+    restart: unless-stopped
+    ports:
+      - 9091:9091
+    volumes:
+      - ./data/config:/config
+    healthcheck:
+      disable: true
+    environment:
+      TZ: Australia/Melbourne

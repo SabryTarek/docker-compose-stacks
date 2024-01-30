@@ -1,0 +1,51 @@
+services:
+  akaunting:
+    image: akaunting/akaunting
+    container_name: akaunting
+    hostname: akaunting
+    restart: unless-stopped
+    ports:
+      - 3162:80
+    volumes:
+      #- ./data/var/www/html:/var/www/html
+      - akaunting-data:/var/www/html
+    environment:
+      AKAUNTING_SETUP: true
+# You should change this to match your reverse proxy DNS name and protocol
+      APP_URL: http://med:3162
+      LOCALE: en-US
+# Don't change this unless you rename your database container or use rootless podman, in case of using rootless podman you should set it to 127.0.0.1 (NOT localhost)
+      DB_HOST: akaunting-db
+      DB_PORT: 3306
+      DB_NAME: akaunting
+      DB_USERNAME: admin
+      DB_PASSWORD: akaunting_password
+# You should change this to a random string of three numbers or letters followed by an underscore
+      DB_PREFIX: asd_
+# These define the first company to exist on this instance. They are only used during setup.
+      COMPANY_NAME: My Company
+      COMPANY_EMAIL: my@company.com
+# This will be the first administrative user created on setup.
+      ADMIN_EMAIL: me@company.com
+      ADMIN_PASSWORD: password
+    depends_on:
+      - akaunting-db
+
+
+  akaunting-db:
+    image: mariadb
+    container_name: akaunting-db
+    hostname: akaunting-db
+    restart: unless-stopped
+    volumes:
+      - ./data/var/lib/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: akaunting
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: akaunting_password
+      MYSQL_RANDOM_ROOT_PASSWORD: yes
+
+
+
+volumes:
+  akaunting-data:

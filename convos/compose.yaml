@@ -1,0 +1,10 @@
+services:
+  convos:
+    image: convos/convos
+    container_name: convos
+    hostname: convos
+    restart: unless-stopped
+    ports:
+      - 1205:3000
+    volumes:
+        - ./data/data/data

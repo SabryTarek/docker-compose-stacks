@@ -1,0 +1,14 @@
+services:
+  drill:
+    image: apache/drill
+    container_name: drill
+    hostname: drill
+    working_dir: /mnt
+    ports:
+      - 8047:8047
+      - 31010:31010
+    volumes:
+      - ./data/mnt:/mnt
+    stdin_open: true 
+    profiles:
+      - drill

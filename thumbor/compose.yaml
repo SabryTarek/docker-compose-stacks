@@ -1,0 +1,8 @@
+services:
+  thumbor:
+    image: minimalcompact/thumbor
+    container_name: thumbor
+    hostname: thumbor
+    restart: always
+    ports:
+      - 4512:80

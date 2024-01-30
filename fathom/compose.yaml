@@ -1,0 +1,35 @@
+services:
+  fathom:
+    image: usefathom/fathom
+    container_name: fathom
+    hostname: fathom
+    restart: always
+    ports:
+      - 7530:8080
+    environment:
+      FATHOM_SERVER_ADDR: :8080
+      FATHOM_GZIP: true
+      FATHOM_DEBUG: false
+      FATHOM_DATABASE_DRIVER: mysql
+      FATHOM_DATABASE_NAME: fathom
+      FATHOM_DATABASE_USER: fathom
+      FATHOM_DATABASE_PASSWORD: fathom
+      FATHOM_DATABASE_HOST: mysql:3306
+      FATHOM_SECRET: TWEn6GXQDx45PZfmJWvyGpXf5M8b94bszgw8JcJWEd6WxgrnUkLatS34GwjPTvZb
+    depends_on:
+      - mysql
+
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    hostname: mysql
+    restart: always
+    volumes:
+      - ./data/var/lib/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: false
+      MYSQL_ROOT_PASSWORD: fathom
+      MYSQL_DATABASE: fathom
+      MYSQL_USER: fathom
+      MYSQL_PASSWORD: fathom

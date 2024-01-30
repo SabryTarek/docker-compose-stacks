@@ -1,0 +1,67 @@
+services:
+  kimai:
+    image: kimai/kimai2:fpm
+    container_name: kimai
+    hostname: kimai
+    restart: unless-stopped
+    volumes:
+      - ./data/opt/kimai/public:/opt/kimai/public
+      - ./data//opt/kimai/var:/opt/kimai/var
+      # - ./ldap.conf:/etc/openldap/ldap.conf:z
+      # - ./ROOT-CA.pem:/etc/ssl/certs/ROOT-CA.pem:z
+    environment:
+      ADMINMAIL: admin@kimai.local
+      ADMINPASS: changemeplease
+      DATABASE_URL: mysql://kimai:kimai@mysql/kimai
+      TRUSTED_HOSTS: mysql,nginx-fpm,localhost,127.0.0.1
+      memory_limit: 500
+
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    hostname: mysql
+    restart: unless-stopped
+    volumes:
+      - ./datavar/var/lib/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: kimai
+      MYSQL_USER: kimai
+      MYSQL_PASSWORD: kimai
+      MYSQL_ROOT_PASSWORD: kimai
+    healthcheck:
+      test: mysqladmin -p$$MYSQL_ROOT_PASSWORD ping -h localhost
+      interval: 20s
+      start_period: 10s
+      timeout: 10s
+      retries: 3
+    command: --default-storage-engine innodb
+
+
+  nginx-fpm:
+    image: tobybatch/nginx-fpm-reverse-proxy
+    container_name: nginx-fpm
+    hostname: nginx-fpm
+    restart: unless-stopped
+    ports:
+      - 8001:80
+    volumes:
+      - ./data/opt/kimai/public:/opt/kimai/public:ro
+    healthcheck:
+      test:  wget --spider http://nginx/health || exit 1
+      interval: 20s
+      start_period: 10s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - kimai
+
+
+  postfix:
+    image: catatnight/postfix
+    container_name: postfix
+    hostname: postfix
+    restart: unless-stopped
+    environment:
+      maildomain: neontribe.co.uk
+      smtp_user: kimai:kimai

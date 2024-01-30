@@ -1,0 +1,19 @@
+services:
+  endlessh:
+    image: lscr.io/linuxserver/endlessh
+    container_name: endlessh
+    hostname: endlessh
+    restart: unless-stopped
+    ports:
+      - 2200:2222
+    volumes:
+      - ./data/config:/config #optional
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Africa/Cairo
+      MSDELAY: 10000 #optional
+      MAXLINES: 32 #optional
+      MAXCLIENTS: 4096 #optional
+      LOGFILE: false #optional
+      BINDFAMILY:  #optional

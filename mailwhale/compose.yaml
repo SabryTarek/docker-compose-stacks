@@ -1,0 +1,28 @@
+services:
+  muety:
+    image: ghcr.io/muety/mailwhale
+    container_name: mailwhale
+    hostname: mailwhale
+    restart: unless-stopped
+    ports:
+      - 6253:3000
+    volumes:
+      - ./data/app/config.yml:/app/config.yml:ro
+      - ./data/data:/data
+    environment:
+      MW_ENV:	dev	# Whether to use development- or production settings
+      MW_MAIL_DOMAIN: #	Default domain for sending mails
+      MW_WEB_LISTEN_ADDR: 127.0.0.1:3000	# IP and port for the web server to listen on (can be IPv4 or IPv6) [http://localhost:5000]	List of URLs which to accept CORS requests for
+      MW_PUBLIC_URL: http://localhost:3000	# The URL under which your MailWhale server is available from the public internet
+      MW_SMTP_HOST:	      # SMTP relay host name or IP
+      MW_SMTP_PORT:	      # SMTP relay port
+      MW_SMTP_USER:	      # SMTP relay authentication user name (leave blank to disable authentication)
+      MW_SMTP_PASS:	      # SMTP relay authentication password
+      MW_SMTP_TLS:	false	# Whether to require full TLS (not to be confused with STARTTLS) for the SMTP relay
+      MW_SMTP_SKIP_VERIFY_TLS: false	# Whether to skip certificate verification (e.g. trust self-signed certs)
+      MW_STORE_PATH:	./data.json.db	# Target location of the database file
+      MW_SECURITY_PEPPER:	# Pepper to use for hashing user passwords
+      MW_SECURITY_ALLOW_SIGNUP:	true	# Whether to allow the registration of new users
+      MW_SECURITY_VERIFY_USERS:	true	# Whether to require new users to activate their account using a confirmation mail
+      MW_SECURITY_VERIFY_SENDERS:	true	# Whether to validate sender addresses and their domains' SPF records
+      MW_SECURITY_BLOCK_LIST:	# []	List of regexes used to block certain recipi

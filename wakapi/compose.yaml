@@ -1,0 +1,39 @@
+services:
+  wakapi:
+    image: ghcr.io/muety/wakapi
+    container_name: wakapi
+    hostname: wakapi
+    restart: unless-stopped
+    ports:
+      - 3951:3000
+    environment:
+      # See README.md and config.default.yml for all config options
+      WAKAPI_DB_TYPE: postgres
+      WAKAPI_DB_NAME: wakapi
+      WAKAPI_DB_USER: wakapi
+      WAKAPI_DB_PASSWORD: wakapi
+      WAKAPI_DB_HOST: postgres
+      WAKAPI_DB_PORT: 5432
+      WAKAPI_PASSWORD_SALT: euid9876fghdkloie8
+      ENVIRONMENT: prod
+
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: wakapi
+      POSTGRES_USER: wakapi
+      POSTGRES_PASSWORD: wakapi
+      PGDATA: /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

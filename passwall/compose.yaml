@@ -1,0 +1,67 @@
+services:
+  passwall-server:
+    image: passwall/passwall-server
+    container_name: passwall-server
+    hostname: passwall-server
+    restart: always
+    ports:
+      - 3625:3625
+    volumes:
+      - ./data/app/config:/app/config
+    environment:
+      PW_DB_NAME: passwall
+      PW_DB_USERNAME: passwall
+      PW_DB_PASSWORD: passwall
+      PW_DB_HOST: postgres
+      PW_DB_PORT: 5432
+      PW_DB_LOG_MODE: false
+      PW_DB_SSL_MODE: disable
+      PORT: 3625
+      PW_SERVER_USERNAME: passwall
+      PW_SERVER_PASSWORD: passwall
+      PW_SERVER_PASSPHRASE: passwall
+      PW_SERVER_SECRET: passwall
+      PW_SERVER_TIMEOUT: 
+      PW_SERVER_GENERATED_PASSWORD_LENGTH: 
+      PW_SERVER_ACCESS_TOKEN_EXPIRE_DURATION: 
+      PW_SERVER_REFRESH_TOKEN_EXPIRE_DURATION: 
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: on-failure
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: passwall
+      POSTGRES_USER: passwall
+      POSTGRES_PASSWORD: passwall
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+
+  nginx:
+    image: umputun/nginx-le:v1.4.2
+    hostname: nginx
+    restart: always
+    container_name: nginx
+    volumes:
+      - ./etc/ssl:/etc/nginx/ssl
+      - ./etc/service.conf:/etc/nginx/service.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      TZ: UTC
+      LETSENCRYPT: true
+      LE_EMAIL: email@yourdomain.com
+      LE_FQDN: yourdomain.com

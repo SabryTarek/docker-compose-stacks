@@ -1,0 +1,33 @@
+services:
+  mariadb:
+    image: lscr.io/linuxserver/mariadb
+    container_name: mariadb
+    hostname: mariadb
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data/config:/config
+      - ./mariadb:/var/lib/mysql
+    environment:
+      TZ: Africa/Cairo
+      PUID: 1000
+      PGID: 1000
+      MYSQL_ROOT_PASSWORD: mariadb
+      MYSQL_DATABASE: mariadb #optional
+      MYSQL_USER: mariadb #optional
+      MYSQL_PASSWORD: mariadb #optional
+      REMOTE_SQL: http://URL1/your.sql,https://URL2/your.sql #optional
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "--password=ROOT_ACCESS_PASSWORD"
+        ]
+      timeout: 10s
+      retries: 10
+

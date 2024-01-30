@@ -1,0 +1,10 @@
+services:
+  redisinsights:
+    image: redislabs/redisinsight
+    container_name: redisinsight
+    hostname: redisinsight
+    restart: always
+    ports:
+      - 8951:8001
+    volumes:
+      - ./data/db:/db

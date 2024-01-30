@@ -1,0 +1,6 @@
+services:
+  maildev:
+    image: maildev/maildev
+    container_name: maildev
+    hostname: maildev
+    restart: on-failure

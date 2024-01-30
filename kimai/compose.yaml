@@ -1,0 +1,33 @@
+services:
+  kimai:
+    image: lscr.io/linuxserver/kimai
+    container_name: kimai
+    hostname: kimai
+    restart: unless-stopped
+    ports:
+      - 4845:80
+      - 2413:443
+    volumes:
+      - ./data/kimai/config:/config
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Etc/UTC
+      DATABASE_URL: mysql://kimai:kimai@kimai:3306/kimai
+
+
+  mariadb:
+    image: lscr.io/linuxserver/mariadb
+    container_name: mariadb
+    hostname: mariadb
+    restart: unless-stopped
+    volumes:
+      - ./data/mariadb/config:/config
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Etc/UTC
+      MYSQL_ROOT_PASSWORD: kimai
+      MYSQL_DATABASE: kimai
+      MYSQL_USER: kimai
+      MYSQL_PASSWORD: kimai

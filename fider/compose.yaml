@@ -1,0 +1,40 @@
+services:
+  fider:
+    image: getfider/fider:stable
+    container_name: fider
+    hostname: fider
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      # Public Host Name
+      BASE_URL: https://fider.dbte.ch
+
+      # Connection string to the PostgreSQL database
+      DATABASE_URL: postgres://fider:fider@fider:5432/fider?sslmode=disable
+
+      # Generate a 512-bit secret here https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
+      JWT_SECRET: PeShVmYq3t6w9z$$C&F)J@NcRfTjWnZr4u7x!A%D*G-KaPdSgVkXp2s5v8y/B?E(H
+
+      # From which account e-mails will be sent
+      EMAIL_NOREPLY: david@dbtechreviews.com
+
+      EMAIL_SMTP_HOST: smtp.gmail.com
+      EMAIL_SMTP_PORT: 587
+      EMAIL_SMTP_USERNAME: david@dbtechreviews.com
+      EMAIL_SMTP_PASSWORD: Y0uRp@55w0rD
+      EMAIL_SMTP_ENABLE_STARTTLS: 'true'
+    depends_on:
+      - postgres
+
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: always
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: fider
+      POSTGRES_PASSWORD: fider

@@ -1,0 +1,25 @@
+services:
+  portainer:
+    image: portainer/portainer-ee
+    container_name: portainer
+    hostname: portainer
+    restart: always
+    ports:
+      - 9443:9443
+      - 9100:9000
+      - 8100:8000
+    volumes:
+      - ./data/data:/data
+    #    command: -H tcp://tasks.agent:9001 --tlsskipverify
+
+
+  agent:
+    image: portainer/agent
+    container_name: portainer_agent
+    hostname: portainer_agent
+    restart: always
+    ports:
+      - 5001:9001
+    volumes:
+      - ./data/var/lib/docker/volumes:/var/lib/docker/volumes
+      - /var/run/docker.sock:/var/run/docker.sock

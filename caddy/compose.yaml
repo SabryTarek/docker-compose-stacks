@@ -1,0 +1,25 @@
+services:
+  caddy:
+    image: caddy
+    container_name: webserver
+    hostname: webserver
+    restart: always
+    ports:
+      - 1024:80
+      - 1025:81
+      - 2048:443
+    volumes:
+      - /srv/under-contraction/dist/:/var/www/under-contraction
+        #      - ./data/var/www/html:/var/www/html
+      - ./data/data:/data
+      - ./data/config:/config
+      - ./data/etc/caddy:/etc/caddy
+
+
+# cat caddy/data/etc/Cadddyfile 
+# :80 {
+#     file_server
+#     root * /var/www/html
+# }
+
+

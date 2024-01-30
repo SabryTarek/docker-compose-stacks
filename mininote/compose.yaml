@@ -1,0 +1,15 @@
+services:
+  mininote:
+    image: ghcr.io/muety/mininote
+    container_name: mininote
+    hostname: mininote
+    restart: unless-stopped
+    ports:
+      - 8535:3000
+    volumes:
+      - ./data/app/data:/app/data
+      - ./data/etc/mininote.crt:/etc/mininote.crt:ro
+      - ./data/etc/mininote.key:/etc/mininote.key:ro
+    environment:
+      HTTPS_CERT: /etc/mininote.crt
+      HTTPS_KEY: /etc/mininote.key

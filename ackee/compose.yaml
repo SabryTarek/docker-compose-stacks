@@ -1,0 +1,27 @@
+services:
+  ackee:
+    image: electerious/ackee
+    container_name: ackee
+    hostname: ackee
+    restart: always
+    ports:
+      - 3124:3000
+    environment:
+      ACKEE_PORT: 3000
+      ACKEE_USERNAME: ackee
+      ACKEE_PASSWORD: ackee
+      WAIT_HOSTS: mongo:27017
+      ACKEE_MONGODB: mongodb://mongo:27017/ackee
+      ACKEE_TTL: 3600000
+
+    depends_on:
+      - mongo
+
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    hostname: mongo
+    restart: always
+    volumes:
+      - ./data/data/db:/data/db

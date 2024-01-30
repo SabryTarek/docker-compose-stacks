@@ -1,0 +1,24 @@
+services:
+  nessus:
+    image: tenable/nessus:latest-ubuntu
+    container_name: nessus
+    hostname: nessus
+    expose:
+      - 8834
+    environment:
+      ACCEPT_EULA: Y
+      NESSUS_UPDATE: enable
+      NESSUS_USERNAME: nessus
+      NESSUS_PASSWORD: nessus
+    volumes:
+      - nessus_data:/opt/nessus/var/nessus
+      - nessus_logs:/opt/nessus/var/nessus/logs
+      - nessus_scans:/opt/nessus/var/nessus/scanner
+
+
+
+
+volumes:
+  nessus_data:
+  nessus_logs:
+  nessus_scans:

@@ -1,0 +1,79 @@
+services:
+  proxy:
+    image: reallibrephotos/librephotos-proxy
+    container_name: proxy
+    hostname: proxy
+    restart: unless-stopped
+    ports:
+      - 4615:80
+    volumes:
+      - ./data/data:/data
+      - ./data/protected_media:/protected_media
+    depends_on:
+      - backend
+      - frontend
+
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: unless-stopped
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: librephotos
+      POSTGRES_PASSWORD: librephotos
+      POSTGRES_DB: librephotos
+    command: postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off -c random_page_cost=1.0
+    healthcheck:
+      test: psql -U librephotos -d librephotos -c "SELECT 1;"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  frontend:
+    image: reallibrephotos/librephotos-frontend
+    container_name: frontend
+    hostname: frontend
+    restart: unless-stopped
+
+
+  backend:
+    image: reallibrephotos/librephotos
+    container_name: backend
+    hostname: backend
+    restart: unless-stopped
+    volumes:
+      - ./data/data:/data
+      - ./data/protected_media:/protected_media
+      - ./data/logs:/logs
+      - ./data/root/.cache:/root/.cache
+    environment:
+      SECRET_KEY: 4fcK5cV@M9NG2#v*64KxhJPzDMd4FRaXT6xwTbMjQ!nu4m
+      BACKEND_HOST: backend
+      ADMIN_EMAIL: librephotos@librephotos.com
+      ADMIN_USERNAME: librephotos
+      ADMIN_PASSWORD: librephotos
+      DB_BACKEND: postgresql
+      DB_NAME: librephotos
+      DB_USER: librephotos
+      DB_PASS: librephotos
+      DB_HOST: postgres
+      DB_PORT: 5432
+      MAPBOX_API_KEY: 
+      WEB_CONCURRENCY: 1
+      SKIP_PATTERNS: 
+      ALLOW_UPLOAD: true
+      CSRF_TRUSTED_ORIGINS: 
+      DEBUG: 0
+      HEAVYWEIGHT_PROCESS: 
+      # scanDirectory: ./librephotos/pictures
+      # data: ./librephotos/data
+      # httpPort: 3000
+      # gunniWorkers: 2
+      # DEFAULT_FAVORITE_MIN_RATING: 4
+    depends_on:
+      postgres:
+        condition: service_healthy

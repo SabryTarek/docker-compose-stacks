@@ -1,0 +1,35 @@
+services:
+  passit:
+    image: passit/passit
+    container_name: passit
+    hostname: passit
+    restart: unless-stopped
+    ports:
+      - 5156:8080
+    environment:
+      DATABASE_URL: postgres://passit:passit@postgres:5432/passit
+      SECRET_KEY: change_me
+      IS_DEBUG: False
+      EMAIL_URL: consolemail://
+      DEFAULT_FROM_EMAIL: passit@something.com
+      EMAIL_CONFIRMATION_HOST: https://passit.some-site.com
+    command: bin/start.sh
+
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: on-failure
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: passit
+      POSTGRES_USER: passit
+      POSTGRES_PASSWORD: passit
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s

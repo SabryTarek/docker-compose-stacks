@@ -1,0 +1,16 @@
+services:
+  garage:
+    image: dxflrs/garage
+    container_name: garage
+    hostname: garage
+    restart: unless-stopped
+    ports:
+      - 3900:3900
+      - 3901:3901
+      - 3902:3902
+    volumes:
+      - ./data/etc/garage.toml:/etc/garage.toml
+      - ./data/var/lib/garage/meta:/var/lib/garage/meta:rw
+      - ./data/var/lib/garage/data:/var/lib/garage/data:rw
+    environment:
+      RUST_LOG: garage=debug

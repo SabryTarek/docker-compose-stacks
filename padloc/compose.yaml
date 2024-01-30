@@ -1,0 +1,38 @@
+services:
+  server:
+    image: padloc/server
+    restart: unless-stopped
+    expose:
+      - 3000
+    volumes:
+      - attachments:/attachments
+    environment:
+      - PL_DATA_BACKEND=postgres
+      - PL_DATA_POSTGRES_HOST=db
+      - PL_DATA_POSTGRES_PORT=5432
+      - PL_DATA_POSTGRES_DATABASE
+      - PL_DATA_POSTGRES_USER
+      - PL_DATA_POSTGRES_PASSWORD
+      - PL_SERVER_CLIENT_URL=https://$PL_HOSTNAME
+      - PL_SERVER_REPORT_ERRORS=$PL_ADMIN_EMAIL
+      - PL_EMAIL_BACKEND
+      - PL_EMAIL_SMTP_HOST
+      - PL_EMAIL_SMTP_PORT
+      - PL_EMAIL_SMTP_USER
+      - PL_EMAIL_SMTP_PASSWORD
+      - PL_EMAIL_SMTP_FROM
+    depends_on:
+      - db
+
+
+  pwa:
+    image: padloc/pwa
+    restart: on-failure
+    environment:
+      PL_PWA_DIR: /pwa
+      PL_SERVER_URL: https://$PL_HOSTNAME/server
+      PL_PWA_URL: https://$PL_HOSTNAME
+      PL_PWA_PORT: 443
+    volumes:
+      - pwa:/pwa
+    command: build

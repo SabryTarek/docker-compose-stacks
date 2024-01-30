@@ -1,0 +1,25 @@
+services:
+  stable:
+    image: ghcr.io/mailu/setup
+    restart: always
+    environment:
+      # Hostname passed to Traefik
+      ADDRESS: setup.mailu.io
+      stable_version: 1.9
+      this_version: 1.9
+      VERSIONS: 1.9,master
+    labels:
+      - traefik.enable=true
+      - traefik.port=80
+      - traefik.docker.network=web
+      - traefik.root.frontend.redirect.regex=.*
+      - traefik.root.frontend.redirect.replacement=/${STABLE}/
+      - traefik.root.frontend.rule=Host:${ADDRESS};PathPrefix:/
+      - traefik.main.frontend.rule=Host:${ADDRESS};PathPrefix:/${STABLE}
+    depends_on:
+      - redis
+
+
+  redis:
+    image: redis:alpine
+    restart: always

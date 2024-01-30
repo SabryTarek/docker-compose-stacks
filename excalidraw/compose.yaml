@@ -1,0 +1,20 @@
+services:
+  excalidraw:
+    image: excalidraw/excalidraw
+    container_name: excalidraw
+    hostname: excalidraw
+    network_mode: bridge
+    restart: always
+    ports:
+      - 3154:80
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./data/opt/node_app/app:/opt/node_app/app:delegated
+        #      - ./package.json:/opt/node_app/package.json
+        #      - ./yarn.lock:/opt/node_app/yarn.lock
+        #      - notused:/opt/node_app/app/node_modules
+    stdin_open: true
+    healthcheck:
+      disable: true
+

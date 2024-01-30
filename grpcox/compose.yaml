@@ -1,0 +1,15 @@
+services:
+  grpcox:
+    iamge: gusaul/grpcox
+    container_name: grpcox
+    hostname: grpcox
+    restart: always
+    ports:
+      - 6969:6969
+    volumes:
+      - ./data/index:/index
+      - ./data/log:/log
+    environment:
+      MAX_LIFE_CONN: 10
+      TICK_CLOSE_CONN: 3
+

@@ -1,0 +1,13 @@
+services:
+  couchdb:
+    image: couchdb
+    container_name: couchdb
+    hostname: couchdb
+    restart: on-failure:5
+    mem_limit: 2g
+    network_mode: host
+    volumes:
+      - ./data/opt/docker/couchdb:/opt/couchdb/data:rw
+    environment:
+     COUCHDB_USER: couchdb
+     COUCHDB_PASSWORD: couchdb

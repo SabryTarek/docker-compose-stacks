@@ -1,0 +1,13 @@
+services:
+  whiteboard:
+    image: rofl256/whiteboard
+    container_name: whiteboard
+    hostname: whiteboard
+    restart: always
+    ports:
+      - 2462:8080/tcp
+    volumes:
+      - ./data/app/puplic/uploads:/opt/app/public/uploads
+      - ./data/app/config.default.yml:/opt/app/config.default.yml:ro
+      - ./data/app/savedBoards:/opt/app/savedBoards
+    command: --config=./config.default.yml

@@ -1,0 +1,10 @@
+services:
+  vigil:
+    image: valeriansaliou/vigil
+    container_name: vigil
+    hostname: vigil
+    restart: unless-stopped
+    ports:
+      - 1509:8000
+    volumes:
+        - ./data/etc/vigil/config.cfg:/etc/vigil.cfg

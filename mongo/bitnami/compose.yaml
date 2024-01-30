@@ -1,0 +1,50 @@
+services:
+  mongodb-primary:
+    image: bitnami/mongodb
+    container_name: mongodb-primary
+    user: root
+    ports:
+      - 37017:27017
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-primary
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_PASSWORD=password123
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
+    volumes:
+      - ./data/bitnami/mongodb:/bitnami/mongodb
+
+  mongodb-secondary:
+    image: bitnami/mongodb
+    container_name: mongodb-secondary
+    ports:
+      - 47017:27017
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-secondary
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=password123
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
+
+  mongodb-arbiter:
+    image: bitnami/mongodb
+    container_name: mongodb-arbiter
+    ports:
+      - 57017:27017
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-arbiter
+      - MONGODB_REPLICA_SET_MODE=arbiter
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=password123
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
+
+
+  mongodb-client:
+    image: bitnami/mongodb
+    container_name: mongodb-client
+    pull_policy: always
+    ports:
+      - 17017:27017

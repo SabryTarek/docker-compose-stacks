@@ -1,0 +1,9 @@
+services:
+  mailcatcher:
+    image: dockage/mailcatcher
+    container_name: mailcatcher
+    hostname: mailcatcher
+    restart: unless-stoped
+    ports:
+      - 1025:1025
+      - 1080:1080

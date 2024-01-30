@@ -1,0 +1,11 @@
+services:
+  baikal:
+    image: ckulka/baikal
+    container_name: baikal
+    hostname: baikal
+    restart: always
+    ports:
+      - 1546:80
+    volumes:
+      - ./data/var/www/baikal/config/var/www/baikal/config:/var/www/baikal/config
+      - ./data/var/www/baikal/Specific:/var/www/baikal/Specific

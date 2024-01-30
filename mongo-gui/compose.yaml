@@ -1,0 +1,10 @@
+services:
+  mongo-gui:
+    image: ugleiton/mongo-gui
+    container_name: mongo-gui
+    hostname: mongo-gui
+    restart: always
+    ports:
+      - 4321:4321
+    environment:
+      MONGO_URL: mongodb://localhost:27017

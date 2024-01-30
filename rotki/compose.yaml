@@ -1,0 +1,25 @@
+services:
+  rotki:
+    image: rotki/rotki
+    container_name: rotki
+    hostname: rotki
+    restart: always
+    ports:
+      - 8084:80
+    volumes:
+      - ./data/data:/data
+      - ./data/logs:/logs
+    environment:
+      TZ: Africa/Cairo  # TimeZone Databases on Wikipedia: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.rotki.loadbalancer.server.port=80
+      - traefik.http.middlewares.redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.rotki-auth.basicauth.realm=`${AUTH_USER}`
+      - traefik.http.middlewares.rotki-auth.basicauth.usersfile=/auth/.htpasswd
+      - traefik.http.routers.rotki-insecure.rule=Host(`${FQDN}`)
+      - traefik.http.routers.rotki-insecure.middlewares=redirect
+      - traefik.http.routers.rotki.rule=Host(`${FQDN}`)
+      - traefik.http.routers.rotki.middlewares=rotki-auth
+      - traefik.http.routers.rotki.entrypoints=websecure
+      - traefik.http.routers.rotki.tls.certresolver=le

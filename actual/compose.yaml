@@ -1,0 +1,17 @@
+services:
+  actual_server:
+    image: jlongster/actual-server
+    container_name: actual-server
+    hostname: actual-server
+    restart: unless-stopped
+    ports:
+      - 5006:5006
+        #    environment:
+      # Uncomment any of the lines below to set configuration options.
+      # - ACTUAL_HTTPS_KEY=/data/selfhost.key
+      # - ACTUAL_HTTPS_CERT=/data/selfhost.crt
+      # - ACTUAL_NORDIGEN_SECRET_ID=xxxx
+      # - ACTUAL_NORDIGEN_SECRET_KEY=xxxx
+      # See all options and more details at https://actualbudget.github.io/docs/Installing/Configuration
+    volumes:
+      - ./data/data:/data

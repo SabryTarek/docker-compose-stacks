@@ -1,0 +1,8 @@
+services:
+  halin:
+    image: mdavidallen/halin
+    container_name: halin
+    hostname: halin
+    restart: unless-stopped
+    ports:
+      - 5681:3000

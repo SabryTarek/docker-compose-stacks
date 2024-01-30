@@ -1,0 +1,10 @@
+services:
+  pasty:
+    image: ghcr.io/lus/pasty
+    container_name: pasty
+    hostname: pasty
+    restart: always
+    ports:
+      - 4287:8080
+    environment:
+      PASTY_AUTODELETE: false

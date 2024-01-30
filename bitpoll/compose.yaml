@@ -1,0 +1,21 @@
+services:
+  bitpoll:
+    image: ghcr.io/fsinfuhh/bitpoll
+    container_name: bitpoll
+    hostname: bitpoll
+    ports:
+     - 3008:3008
+     - 3009:3009
+    volumes:
+     - ./data/opt/static:/opt/static
+     - ./data/opt/config:/opt/config
+     - ./data/opt/log/:/opt/log
+
+
+  web:
+    image: nginx
+    volumes:
+     - ./docker_files/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+     - ./run/static:/opt/static
+    ports:
+     - 3568:80

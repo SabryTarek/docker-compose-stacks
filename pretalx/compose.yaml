@@ -1,0 +1,41 @@
+services:
+  pretalx:
+    image: pretalx/standalone
+    container_name: pretalx
+    hostname: pretalx
+    restart: unless-stopped
+    ports:
+      - 4519:80
+    volumes: 
+      - ./data/etc/pretalx/pretalx.cfg:/etc/pretalx/pretalx.cfg:ro
+      - ./data/pretalx/data:/data
+    depends_on: 
+      - redis
+      - db
+    labels:
+       traefik.docker.network: pretalxdocker
+       traefik.enable: true
+
+
+  db:
+    image: mysql
+    container_name: mysql
+    hostname: mysql
+    restart: unless-stopped
+    volumes:
+      - ./data/var/lib/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: pretalx
+      MYSQL_USER: pretalx
+      MYSQL_PASSWORD: pretalx
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    restart: unless-stopped
+    volumes: 
+      - data/data:/data

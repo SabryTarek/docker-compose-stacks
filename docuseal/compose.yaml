@@ -1,0 +1,54 @@
+services:
+  docuseal:
+    image: docuseal/docuseal
+    container_name: docuseal
+    hostname: docuseal
+    restart: unless-stopped
+    ports:
+      - 9567:3000
+    volumes:
+      - ./data/docuseal/data:/data
+    environment:
+      FORCE_SSL: false
+      DATABASE_URL: postgresql://docuseal:docuseal@postgres:5432/docuseal
+#      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/docuseal
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
+  postgres:
+    image: postgres
+      #    container_name: postgres
+    hostname: postgres
+    restart: unless-stopped
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: docuseal
+      POSTGRES_PASSWORD: docuseal
+      POSTGRES_DB: docuseal
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: docuseal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  caddy:
+    image: caddy
+    container_name: caddy
+    hostname: caddy
+    restart: unless-stopped
+    ports:
+      - 8014:80
+      - 643:443
+      - 443:443/udp
+    volumes:
+      - ./data/caddy/data:/data
+    environment:
+      HOST: ${HOST}
+    command: caddy reverse-proxy --from $HOST --to docuseal:3000

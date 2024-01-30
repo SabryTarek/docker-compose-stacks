@@ -1,0 +1,23 @@
+services:
+ redis:
+    image: redis
+    command: redis-server --requirepass some_pass
+    ports:
+     - 6379:6379
+    volumes:
+      - ./datavar/lib/redis:/var/lib/redis
+      - ./data/usr/local/etc/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      REDIS_REPLICATION_MODE: master
+
+
+ redis2:
+    image: redis
+    command: redis-server --requirepass some_pass
+    ports:
+     - 6378:6379
+    volumes:
+      - ./datavar/lib/redis2:/var/lib/redis
+      - ./data/usr/local/etc/redis2/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      REDIS_REPLICATION_MODE: slave

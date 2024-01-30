@@ -1,0 +1,14 @@
+services:
+  tasks-md:
+    image: baldissaramatheus/tasks.md
+    container_name: tasks-md
+    hostname: tasks-md
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    environment:
+      PUID: 1000
+      PGID: 1000
+    volumes:
+      - ./data/api/files:/api/files
+      - ./dara/api/static/stylesheets:/api/static/stylesheets

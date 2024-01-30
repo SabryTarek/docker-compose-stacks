@@ -1,0 +1,30 @@
+services:
+  orangehrm:
+    image: orangehrm/orangehrm
+    container_name: orangehrm
+    hostname: orangehrm
+    restart: always
+    ports:
+      - 8181:80
+      - 8443:443
+    environment:
+      ORANGEHRM_DATABASE_HOST: mariadb
+      ORANGEHRM_DATABASE_USER: orangehrm
+      ORANGEHRM_DATABASE_PASSWORD: orangehrm
+      ORANGEHRM_DATABASE_NAME: orangehrm
+      PUID: 998
+      PGID: 100
+    volumes:
+      - ./data/orangehrm:/orangehrm
+    depends_on:
+      - mariadb
+
+
+  mariadb:
+    image: mariadb
+    volumes:
+      - ./data/var/lib/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: orangehrm
+      MYSQL_ROOT_USER: root
+      MYSQL_DATABASE: orangehrm

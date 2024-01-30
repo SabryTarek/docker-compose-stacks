@@ -1,0 +1,34 @@
+services:
+  realms:
+    image: realms/realms-wiki
+    volumes:
+      - /var/data/realms:/home/wiki/data
+    networks:
+      - internal
+      - traefik_public
+    labels:
+      # traefik common
+      - traefik.enable=true
+      - traefik.docker.network=traefik_public
+
+      # traefikv1
+      - traefik.frontend.rule=Host:realms.example.com
+      - traefik.port=5000     
+
+      # traefikv2
+      - "traefik.http.routers.realms.rule=Host(`realms.example.com`)"
+      - "traefik.http.services.realms.loadbalancer.server.port=5000"
+      - "traefik.enable=true"
+
+      # Remove if you wish to access the URL directly
+      - "traefik.http.routers.realms.middlewares=forward-auth@file"
+
+
+networks:
+  traefik_public:
+    external: true
+  internal:
+    driver: overlay
+    ipam:
+      config:
+        - subnet: 172.16.35.0/24

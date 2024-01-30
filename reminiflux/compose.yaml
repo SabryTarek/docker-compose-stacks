@@ -1,0 +1,8 @@
+services:
+  reminiflux:
+    image: abali/reminiflux
+    container_name: reminiflux
+    hostname: reminiflux
+    restart: always
+    ports:
+      - 8358:80

@@ -1,0 +1,11 @@
+services:
+  whitebophir:
+    image: lovasoa/wbo
+    container_name: whitebophir
+    hostname: whitebophir
+    restart: on-failure
+    ports:
+      - 3589:80
+    volumes:
+      - ./data/opt/app/server-data:/opt/app/server-data
+

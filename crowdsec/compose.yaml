@@ -1,0 +1,11 @@
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec
+    container_name: crowdsec
+    hostname: crowdsec
+    volumes:
+      - ./data/etc/crowdsec:/etc/crowdsec
+      - /var/log/auth.log:/var/log/auth.log:ro
+#      - /path/mycustom.log:/var/log/mycustom.log
+    environment:
+      COLLECTIONS: crowdsecurity/sshd

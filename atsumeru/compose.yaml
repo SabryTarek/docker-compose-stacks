@@ -1,0 +1,14 @@
+services:
+  atsumeru:
+    image: atsumerudev/atsumeru
+    container_name: atsumeru
+    hostname: atsumeru
+    restart: unless-stopped
+    ports:
+      - 31337:31337
+    volumes:
+      - ./data/library:/library
+      - ./data/config:/app/confg
+      - ./data/db:/app/database
+      - ./data/cache:/app/cache
+      - ./data/logs:/app/logs

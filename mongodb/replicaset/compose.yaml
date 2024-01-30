@@ -1,0 +1,46 @@
+services:
+  mongodb1:
+    image: mongo
+    container_name: mongodb1
+    hostname: mongodb1
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    volumes:
+      - ./data/mongodb1/data/db:/data/db
+      - ./mongodb/initdb.d:/docker-entrypoint-initdb.d
+      - ./mongodb/init-replset.js:/init-replset.js
+    command: [mongod, --bind_ip_all, --replSet, rs0]
+
+
+  mongodb2:
+    image: mongo
+    container_name: mongodb2
+    hostname: mongodb2
+    restart: unless-stopped
+    # ports:
+    #   - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    volumes:
+      - ./data/mongodb2/data/db:/data/db
+    command: [mongod, --bind_ip_all, --replSet, rs0]
+
+
+  mongodb3:
+    image: mongo
+    container_name: mongodb3
+    hostname: mongodb3
+    restart: unless-stopped
+    # ports:
+    #   - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    volumes:
+      - ./data/mongodb3/data/db:/data/db
+    command: [mongod, --bind_ip_all, --replSet, rs0]

@@ -1,0 +1,63 @@
+services:
+  passbolt:
+    image: passbolt/passbolt
+    container_name: passbolt
+    hostname: passbolt
+    restart: unless-stopped
+    ports:
+      - 8043:80
+      - 4433:443
+    volumes:
+      - gpg_volume:/etc/passbolt/gpg
+      - jwt_volume:/etc/passbolt/jwt
+    environment:
+      ADMIN_EMAIL: admin@admin.com
+      ADMIN_FIRSTNAME: admin
+      ADMIN_LASTNAME: admin
+      APP_FULL_BASE_URL: http://med:8043
+      DATASOURCES_DEFAULT_HOST: mariadb
+      DATASOURCES_DEFAULT_USERNAME: passbolt
+      DATASOURCES_DEFAULT_PASSWORD: passbolt
+      DATASOURCES_DEFAULT_DATABASE: passbolt
+      EMAIL_DEFAULT_FROM_NAME: Passbolt
+      EMAIL_DEFAULT_FROM: you@localhost
+      EMAIL_TRANSPORT_DEFAULT_HOST: localhost
+      EMAIL_TRANSPORT_DEFAULT_PORT: 25
+      EMAIL_TRANSPORT_DEFAULT_USERNAME: null
+      EMAIL_TRANSPORT_DEFAULT_PASSWORD: null
+      EMAIL_TRANSPORT_DEFAULT_TLS: null
+    command: ["/usr/bin/wait-for.sh", "-t", "0", "mariadb:3306", "--", "/docker-entrypoint.sh"]
+    depends_on:
+      - mariadb
+
+
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    hostname: mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: true
+      MYSQL_DATABASE: passbolt
+      MYSQL_USER: passbolt
+      MYSQL_PASSWORD: passbolt
+    volumes:
+      - ./data/var/lib/mysql:/var/lib/mysql
+
+
+
+
+
+volumes:
+  database_volume:
+  gpg_volume:
+  jwt_volume:
+
+
+
+# docker compose exec passbolt su -m -c "/usr/share/php/passbolt/bin/cake \
+#                                passbolt register_user \
+#                                -u sabry.tarek.devops@gmail.com \
+#                                -f sabry \
+#                                -l tarek \
+#                                -r admin" -s /bin/sh www-data

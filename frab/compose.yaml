@@ -1,0 +1,32 @@
+services:
+    frab:
+        image: ghcr.io/frab/frab
+        container_name: frab
+        hostname: frab
+        restart: always
+        volumes:
+            - ./data/home/frab/app/public:/home/frab/app/public
+        ports:
+            - 3567:3000
+        environment:
+            TZ: Africa/Cairo
+            SECRET_KEY_BASE: 5fe64927bda359b186be52191c1ce3e5ef34827a
+            DATABASE_URL: postgresql://frab:frab/frab
+            FRAB_CURRENCY_UNIT: '$$'
+            FROM_EMAIL: frab@localhost
+        depends_on:
+            - postgres
+
+
+    postgres:
+        image: postgres
+        container_name: postgres
+        hostname: postgres
+        restart: always
+        volumes:
+            - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+        environment:
+            TZ: Africa/Cairo
+            POSTGRES_USER: frab
+            POSTGRES_PASSWORD: frab
+            POSTGRES_DB: frab

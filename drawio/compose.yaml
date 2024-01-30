@@ -1,0 +1,26 @@
+services:
+  drawio:
+    image: jgraph/drawio
+    container_name: drawio
+    hostname: drawio
+    restart: unless-stopped
+    ports:
+      - 8713:8080
+      - 8604:8443
+        #    environment:
+        #      LETS_ENCRYPT_ENABLED: false
+        #      PUBLIC_DNS: domain
+        #      ORGANISATION_UNIT: unit
+        #      ORGANISATION: org
+        #      CITY: Cairo
+        #      STATE: Cairo
+        #      COUNTRY_CODE: Egypt
+        #      KEYSTORE_PASS: 
+        #      KEY_PASS: 
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://domain:8080 || exit 1"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+

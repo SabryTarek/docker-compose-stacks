@@ -1,0 +1,16 @@
+services:
+  flyway:
+    image: flyway/flyway
+    container_name: flyway
+    hostname: flyway
+    restart: unless-stopped
+    volumes:
+      - ./data/pulsar/flyway/sql:/flyway/sql
+      - ./data/pulsar/flyway/conf:/flyway/conf
+    entrypoint: ["flyway", "migrate"]
+    healthcheck:
+      test: ["flyway", "info"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

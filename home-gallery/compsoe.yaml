@@ -1,0 +1,37 @@
+services:
+  api:
+    image: xemle/home-gallery-api-server
+    environment:
+    # TensorflowJS backends  
+      #- BACKEND: cpu  # cpu: slowest and best support
+      - BACKEND: wasm  # good perfromance for arm64 and amd64 platforms
+      #- BACKEND: node # best performance on amd64 platform
+
+
+  gallery:
+    image: xemle/home-gallery
+    contianer_name: home-gallery
+    hostname: home-gallery
+    volumes:
+      - ./data:/data
+      - ./data/data/Pictures:/data/Pictures # Mount your media directories below /data
+    ports:
+      - 4562:3000
+    user: 
+    environment:
+      GALLERY_API_SERVER: http://api:3000
+      GALLERY_API_SERVER_CONCURRENT: 1 # On low powered devices
+      GALLERY_API_SERVER_TIMEOUT: 60 # On low powered devices
+      GALLERY_OPEN_BROWSER: false
+    entrypoint: ['node', '/app/gallery.js']
+    command: ['run', 'server']
+
+# echo "CURRENT_USER=$(id -u):$(id -g)" >> .env
+# docker-compose run gallery run init --source /data/Pictures
+# docker-compose up -d
+# docker-compose run gallery run import --initial
+# After importing all images you can import new images by:
+
+# docker-compose run gallery run import --update
+# For cron update task use -T to disable pseudo-tty allocation
+#docker-compose run -T gallery run import --update

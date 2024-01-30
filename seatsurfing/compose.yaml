@@ -1,0 +1,46 @@
+services:
+  seatsurfing-backend:
+    image: seatsurfing/backend
+    container_name: seatsurfing-backend
+    hostname: seatsurfing-backend
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      POSTGRES_URL: postgres://seatsurfing:seatsurfing@db/seatsurfing?sslmode=disable
+      JWT_SIGNING_KEY: some_random_string
+      BOOKING_UI_BACKEND: booking-ui:3001
+      ADMIN_UI_BACKEND: admin-ui:3000
+      PUBLIC_URL: https://seatsurfing.your-domain.com
+      FRONTEND_URL: https://seatsurfing.your-domain.com
+
+
+  booking-ui:
+    image: seatsurfing/booking-ui
+    container_name: seatsurfing-backend
+    hostname: seatsurfing-backend
+    restart: always
+    environment:
+      FRONTEND_URL: https://seatsurfing.your-domain.com
+
+
+  admin-ui:
+    image: seatsurfing/admin-ui
+    container_name: seatsurfing-ui
+    hostname: seatsurfing-ui
+    restart: always
+    environment:
+      FRONTEND_URL: https://seatsurfing.your-domain.com
+
+
+  db:
+    image: postgres
+    container_name: seatsurfing-db
+    hostname: seatsurfing-db
+    restart: always
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: seatsurfing
+      POSTGRES_USER: seatsurfing
+      POSTGRES_DB: seatsurfing

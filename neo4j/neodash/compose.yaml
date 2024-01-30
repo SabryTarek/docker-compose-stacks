@@ -1,0 +1,8 @@
+services:
+  neodash:
+    image: neo4jlabs/neodash
+    container_name: neodash
+    hostname: neodash
+    restart: unless-stopped
+    ports:
+      - 5689:5005

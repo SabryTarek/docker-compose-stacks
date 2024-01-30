@@ -1,0 +1,29 @@
+services:
+  strapi:
+    image: strapi/strapi
+    container_name: strapi
+    hostname: strapi
+    restart: unless-stopped
+    ports:
+      - 1337:1337
+    volumes:
+      - ./data/srv/app:/srv/app
+    environment:
+      DATABASE_CLIENT: mongo
+      DATABASE_HOST: mongo
+      DATABASE_PORT: 27017
+      DATABASE_NAME: strapi
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi
+
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    hostname: mongo
+    restart: unless-stopped
+    volumes:
+      - ./data/data/db:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: strapi
+      MONGO_INITDB_ROOT_PASSWORD: strapi

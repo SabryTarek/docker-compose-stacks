@@ -1,0 +1,9 @@
+services:
+  this-week-in-past:
+    image: rouhim/this-week-in-past
+    container_name: this-week-in-past
+    hostname: this-week-in-past
+    ports:
+      - 1258:8080
+    volumes:
+      - ./data/resources:/resources:ro

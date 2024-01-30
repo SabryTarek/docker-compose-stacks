@@ -1,0 +1,39 @@
+services:
+  lychee:
+    image: lscr.io/linuxserver/lychee
+    container_name: lychee
+    hostname: lychee
+    restart: always
+    ports:
+      - 8192:80
+    volumes:
+      - ./data/config:/config
+      - ./data/pictures:/pictures
+    environment:
+      DB_HOST: mariadb
+      DB_USERNAME: lychee
+      DB_PASSWORD: lychee
+      DB_DATABASE: lychee
+      DB_PORT: 3306
+      PGID: 1000
+      PUID: 1000
+      TZ: Africa/Cairo
+    depends_on:
+      - mariadb
+
+
+  mariadb:
+    image: lscr.io/linuxserver/mariadb
+    container_name: lychee_mariadb
+    hostname: lychee_mariadb
+    restart: always
+    volumes:
+      - ./data/mariadb/config:/config
+    environment:
+      MYSQL_ROOT_PASSWORD: lychee
+      MYSQL_DATABASE: lychee
+      MYSQL_USER: lychee
+      MYSQL_PASSWORD: lychee
+      PGID: 1000
+      PUID: 1000
+      TZ: Africa/Cairo

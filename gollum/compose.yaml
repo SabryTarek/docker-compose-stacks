@@ -1,0 +1,38 @@
+services:
+  app:
+    image: dakue/gollum
+    volumes:
+     - /var/data/gollum:/gollum
+    networks:
+      - internal
+      - traefik_public
+    deploy:
+      labels:
+        # traefik common
+        - traefik.enable=true
+        - traefik.docker.network=traefik_public
+
+        # traefikv1
+        - traefik.frontend.rule=Host:gollum.example.com
+        - traefik.port=4567     
+
+        # traefikv2
+        - "traefik.http.routers.gollum.rule=Host(`gollum.example.com`)"
+        - "traefik.http.services.gollum.loadbalancer.server.port=4567"
+        - "traefik.enable=true"
+
+        # Remove if you wish to access the URL directly
+        - "traefik.http.routers.wekan.middlewares=forward-auth@file"
+    command: |
+      --allow-uploads
+      --emoji
+      --user-icons gravatar
+
+networks:
+  traefik_public:
+    external: true
+  internal:
+    driver: overlay
+    ipam:
+      config:
+        - subnet: 172.16.9.0/24

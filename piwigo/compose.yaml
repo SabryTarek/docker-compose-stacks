@@ -1,0 +1,14 @@
+services:
+  piwigo:
+    image: lscr.io/linuxserver/piwigo:latest
+    container_name: piwigo
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Africa/Cairo
+    volumes:
+      - ./data/config:/config
+      - ./data/gallery:/gallery
+    ports:
+      - 8077:80
+    restart: unless-stopped

@@ -1,0 +1,58 @@
+services:
+  backend:
+    image: infisical/infisical
+    container_name: infisical-backend
+    hostname: infisical-backend
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - 80:8080
+    environment:
+      NODE_ENV: production
+    networks:
+      - infisical
+    depends_on:
+      - mongo
+
+
+  redis:
+    image: redis
+    container_name: infisical-dev-redis
+    hostname: infisical-dev-redis
+    env_file: .env
+    environment:
+      ALLOW_EMPTY_PASSWORD: yes
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+    networks:
+      - infisical
+
+
+  mongo:
+    image: mongo
+    container_name: infisical-mongo
+    hostname: infisical-mongo
+    restart: always
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - infisical
+
+
+
+
+volumes:
+  mongo-data:
+    driver: local
+  redis_data:
+    driver: local
+
+
+networks:
+  infisical:

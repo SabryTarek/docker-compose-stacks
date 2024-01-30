@@ -1,0 +1,26 @@
+services:
+  app:
+    image: solidinvoice/solidinvoice
+    container_name: solidinvoice
+    hostname: solidinvoice
+    restart: on-failure:5
+    ports:
+      - 5484:80
+    depends_on:
+      - db
+
+
+  db:
+    image: mysql
+    container_name: mysql
+    hostname: mysql
+    restart: on-failure:5
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./data/var/lib/mysql:/var/lib/mysql:rw
+    environment:
+      MYSQL_DATABASE: solidinvoice
+      MYSQL_ROOT_PASSWORD: solidinvoice
+      MYSQL_USER: solidinvoice
+      MYSQL_PASSWORD: solidinvoice

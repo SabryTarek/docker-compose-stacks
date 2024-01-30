@@ -1,0 +1,20 @@
+services:
+  yopass:
+    image: jhaals/yopass
+    container_name: yopass
+    hostname: yopass
+    network_mode: bridge
+    restart: always
+    ports:
+      - 127.0.0.1:3526:80
+      - 127.0.0.1:3527:8484
+    command: --memcached=memcached:11211 --port 80 --metrics-port 8484 # /metrics
+
+
+  memcached:
+    image: memcached
+    container_name: memcached
+    hostname: memcached
+    restart: always
+    expose:
+      - 11211

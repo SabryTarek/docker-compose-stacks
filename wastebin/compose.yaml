@@ -1,0 +1,33 @@
+services:
+  wastebin:
+    image: quxfoo/wastebin
+    container_name: wastebin
+    hostname: wastebin
+    restart: unless-stopped
+    ports:
+      - 5487:8088
+    volumes:
+      - ./data/data:/data
+    environment:
+      WASTEBIN_ADDRESS_PORT: 0.0.0.0:8088
+      WASTEBIN_BASE_URL: http://127.0.0.14587
+      WASTEBIN_CACHE_SIZE: 128
+      WASTEBIN_DATABASE_PATH: /data/state.db
+      WASTEBIN_HTTP_TIMEOUT: 5
+      WASTEBIN_MAX_BODY_SIZE: 1MB
+      WASTEBIN_PASSWORD_SALT: 
+      WASTEBIN_SIGNING_KEY: 
+      WASTEBIN_TITLE: wastebin
+      RUST_LOG: debug
+      tower_http: 
+
+
+        # function waste-paste() {
+        #     local URL=$(\
+        #         jq -n --arg t "$(xclip -selection clipboard -o)" '{text: $t}' | \
+        #         curl -s -H 'Content-Type: application/json' --data-binary @- http://0.0.0.0:8088 | \
+        #         jq -r '. | "http://0.0.0.0:8088\(.path)"')
+        # 
+        #     xdg-open $URL
+        # }
+        # 

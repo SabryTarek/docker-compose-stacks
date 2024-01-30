@@ -1,0 +1,22 @@
+services:
+  goaccess:
+    image: xavierh/goaccess-for-nginxproxymanager
+    container_name: goaccess
+    hostname: goaccess
+    restart: unless-stopped
+    expose:
+        - 7880
+    volumes:
+        - ../npm/data/logs:/opt/log
+      #        - /path/to/host/custom:/opt/custom #optional, required if using log_type :  CUSTOM
+      #    networks:
+      #      - app
+    environment:
+        TZ: Africa/Cairo
+        SKIP_ARCHIVED_LOGS: False #optional
+        DEBUG: False #optional
+        BASIC_AUTH: False #optional
+        BASIC_AUTH_USERNAME: admin #optional
+        BASIC_AUTH_PASSWORD: admin #optional
+        EXCLUDE_IPS: 127.0.0.1 #optional - comma delimited list
+        LOG_TYPE: NPM #optional - more information below

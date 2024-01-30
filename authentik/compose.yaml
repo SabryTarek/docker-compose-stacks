@@ -1,0 +1,88 @@
+services:
+  server:
+    image: ghcr.io/goauthentik/server
+    container_name: server
+    hostname: server
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+      - 9443:9443
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: authentik
+      AUTHENTIK_SECRET_KEY: cUK4cmNO8J6ydyVXquxhgfdrtx7lTGDpvfp53mzE3jjWAOPblG
+    volumes:
+      - ./data/media:/media
+      - ./data/templates:/templates
+    command: server
+    depends_on:
+      - postgresql
+      - redis
+
+
+  worker:
+    image: ghcr.io/goauthentik/server
+    container_name: worker
+    hostname: worker
+    restart: unless-stopped
+    # `user: root` and the docker socket volume are optional.
+    # See more for the docker socket integration here:
+    # https://goauthentik.io/docs/outposts/integrations/docker
+    # Removing `user: root` also prevents the worker from fixing the permissions
+    # on the mounted folders, so when removing this make sure the folders have the correct UID/GID
+    # (1000:1000 by default)
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data/media:/media
+      - ./data/certs:/certs
+      - ./data/templates:/templates
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: authentik
+      AUTHENTIK_SECRET_KEY: cUK4cmNO8J6ydyVXquxhgfdrtx7lTGDpvfp53mzE3jjWAOPblG
+    command: worker
+    depends_on:
+      - postgresql
+      - redis
+
+
+  postgresql:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: unless-stopped
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: authentik
+      POSTGRES_USER: authentik
+      POSTGRES_DB: authentik
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    restart: unless-stopped
+    volumes:
+      - ./data/data:/data
+    command: --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s

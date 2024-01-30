@@ -1,0 +1,18 @@
+services:
+  timetagger:
+    image: ghcr.io/almarklein/timetagger
+    container_name: timetagger
+    hostname: timetagger
+    restart: always
+    ports:
+      - 3652:80
+    volumes:
+      - ./data/root/_timetagger:/root/_timetagger
+    environment:
+      TIMETAGGER_BIND: 0.0.0.0:80 # (str): the address and port to bind on. Default "0.0.0.0:80".
+      TIMETAGGER_DATADIR: /root/_timetagger # the directory to store data. Default "~/_timetagger". The user db's are stored in datadir/users.
+      TIMETAGGER_LOG_LEVEL: info # the log level for timetagger and asgineer (not the asgi server). Default "info".
+      TIMETAGGER_CREDENTIALS: sabry:$$2a$$08$$lQVezJ1fJgi4HJ.tnNf9BOef1ZQjm2p7/z6X2briwLAAEixeF/0va,khalid:$$2a$$08$$UDIFjH.DajHjCfMeroVN8OBZX8xM97FsDpb1.E3iQ02kB6OyiHfDu,eslam:$$2a$$08$$xNOKEi2JN.DLeoAIN3OlUuJKA.QVO7akDTtRdWCwJ5whc1p.yQvsG,adel:$$2a$$08$$bPbyYf7/ZU2C1W5mjhr27e8EQL7KM7g8l.OgemT548tmKF24qoeZC,saadawy:$$2a$$08$$IHU5VpwVnicrc0bSxypjL.bAl8md.UxOqOhI7H.Z94HDarlo3ez3a  # test:test #  login credentials for one or more users, in the form "user1:hash1,user2:hash2" where each hash is a salted hash (BCrypt) of the password. Used in the default startup script main.py. You can generate credentials with https://timetagger.app/cred.
+      proxy_auth_enabled: false # (bool): enables authentication from a reverse proxy (for example Authelia). Default "False".
+      proxy_auth_trusted: 127.0.0.1  # (str): list of trusted reverse proxy IPs with or without CIDR, in the form "127.0.0.1,10.0.0.1,10.99.0.0/24,192.168/16". Default "127.0.0.1".
+      proxy_auth_header: X-Remote-User # (str): name of the proxy header which contains the username of the logged in user. Default "X-Remote-User".

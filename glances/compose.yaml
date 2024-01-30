@@ -1,0 +1,21 @@
+services:
+  glances:
+    image: nicolargo/glances
+    container_name: glances
+    hostname: glances
+    restart: on-failure:5
+    pid: host
+    privileged: true
+    network_mode: host
+    ports:
+      - 61208:61208
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      GLANCES_OPT: -w
+    mem_limit: 4g
+    cpu_shares: 768
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+     test: curl -f http://localhost:61208/ || exit 1

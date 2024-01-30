@@ -1,0 +1,8 @@
+services:
+  chatpad:
+    image: ghcr.io/deiucanta/chatpad
+    container_name: chatpad
+    hostname: chatpad
+    restart: always
+    ports:
+      - 8200:80

@@ -1,0 +1,27 @@
+services:
+  accent:
+    image: mirego/accent
+    container_name: accent
+    hostname: accent
+    restart: unless-stopped
+    ports:
+      - 4541:4000
+    environment:
+      PORT: 4000
+      DATABASE_URL: postgres://accent:accent@postgres:5432/accent
+      DUMMY_LOGIN_ENABLED: 1
+    depends_on:
+      - postgres
+
+
+  postgres:
+    image: postgres
+    container_name: accent-postgres
+    hostname: accent-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: accent
+      POSTGRES_PASSWORD: accent
+      POSTGRES_DB: accent
+    volumes:
+      - ./data/vat/lib/postgresql/data:/var/lib/postgresql/data

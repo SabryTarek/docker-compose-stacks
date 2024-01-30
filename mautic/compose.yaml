@@ -1,0 +1,46 @@
+services:
+  mautic:
+    image: mautic/mautic
+    container_name: mautic
+    hostname: mautic
+    restart: always
+    volumes:
+    ports:
+      - 1259:80
+    volumes:
+      - ./data/var/www/html:/var/www/html
+    environment:
+      MAUTIC_DB_HOST: percona
+      MYSQL_PORT_3306_TCP: 3306
+      MAUTIC_DB_USER: root
+      MAUTIC_DB_PASSWORD: mautic
+      MAUTIC_DB_NAME: mautic
+      MAUTIC_RUN_CRON_JOBS: true
+      PHP_INI_DATE_TIMEZONE: Africa/Cairo
+    depends_on:
+      - percona
+      labels:
+      - traefik.enable=true 
+      # Routes
+      - traefik.http.routers.mautic.rule=Host(`${MAUTIC_SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.mautic-secure.tls=true
+      - traefik.http.routers.mautic.entrypoints=websecure
+      - traefik.http.routers.mautic.tls.certresolver=mytlschallenge
+      # Middlewares
+      - traefik.http.middlewares.mautic.headers.SSLRedirect=true
+      - traefik.http.middlewares.mautic.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.mautic.headers.SSLHost=${DOMAIN_NAME}
+      - traefik.http.middlewares.mautic.headers.forceSTSHeader=true
+
+
+  percona:
+    image: percona/percona-server
+    container_name: percona
+    hostname: percona
+    restart: always
+    volumes:
+      - ./data/var/lib/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: percona
+    command:
+      --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci

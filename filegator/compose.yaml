@@ -1,0 +1,11 @@
+services:
+  filegator:
+    image: filegator/filegator
+    container_name: filegator
+    hostname: filegator
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - ./data/var/www/filegator/repository:/var/www/filegator/repository
+      - ./data/var/www/filegator/private:/var/www/filegator/private

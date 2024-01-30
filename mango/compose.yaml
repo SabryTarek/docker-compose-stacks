@@ -1,0 +1,11 @@
+services:
+  mango:
+    image: hkalexling/mango
+    container_name: mango
+    hostname: mango
+    restart: unless-stopped
+    ports:
+      - 7360:9000
+    volumes:
+      - ./data/root/mango:/root/mango
+      - ./data/root/.config/mango:/root/.config/mango

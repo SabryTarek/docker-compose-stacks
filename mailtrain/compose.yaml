@@ -1,0 +1,44 @@
+services:
+  mailtrain:
+    image: mailtrain/mailtrain
+    container_name: mailtrain
+    hostname: mailtrain
+    restart: always
+    ports:
+      - 3000:3000
+      - 3003:3003
+      - 3004:3004
+    volumes:
+      - ./data/app/server/files:/app/server/files
+
+
+  mysql:
+    image: mariadb
+    container_name: mariadb
+    hostname: mariadb
+    restart: always
+    volumes:
+      - ./data/var/lib/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mailtrain
+      MYSQL_DATABASE: mailtrain
+      MYSQL_USER: mailtrain
+      MYSQL_PASSWORD: mailtrain
+
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    restart: always
+    volumes:
+      - ./data/data:/data
+
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    hostname: mongo
+    restart: always
+    volumes:
+      - ./data/data/db:/data/db

@@ -1,0 +1,141 @@
+services:
+  app-service:
+    image: budibase.docker.scarf.sh/budibase/apps
+    container_name: bbapps
+    hostname: bbapps
+    restart: unless-stopped
+    environment:
+      SELF_HOSTED: 1
+      COUCH_DB_URL: http://budibase:budibase@couchdb-service:5984
+      WORKER_URL: http://worker-service:4003
+      MINIO_URL: http://minio-service:9000
+      MINIO_ACCESS_KEY: budibase
+      MINIO_SECRET_KEY: budibase
+      INTERNAL_API_KEY: budibase
+      BUDIBASE_ENVIRONMENT: PRODUCTION
+      PORT: 4002
+      JWT_SECRET: testsecret
+      LOG_LEVEL: info
+      SENTRY_DSN: https://a34ae347621946bf8acded18e5b7d4b8@o420233.ingest.sentry.io/5338131
+      ENABLE_ANALYTICS: true
+      REDIS_URL: redis-service:6379
+      REDIS_PASSWORD: budibase
+      BB_ADMIN_USER_EMAIL: ${BB_ADMIN_USER_EMAIL}
+      BB_ADMIN_USER_PASSWORD: ${BB_ADMIN_USER_PASSWORD}
+      PLUGINS_DIR: ${PLUGINS_DIR}
+    depends_on:
+      - worker-service
+      - redis-service
+    volumes:
+      - ./data/plugins:/plugins
+
+
+  worker-service:
+    restart: unless-stopped
+    image: budibase.docker.scarf.sh/budibase/worker
+    container_name: bbworker
+    environment:
+      SELF_HOSTED: 1
+      PORT: 4003
+      CLUSTER_PORT: 10000
+      JWT_SECRET: testsecret
+      MINIO_ACCESS_KEY: budibase
+      MINIO_SECRET_KEY: budibase
+      MINIO_URL: http://minio-service:9000
+      APPS_URL: http://app-service:4002
+      COUCH_DB_USERNAME: budibase
+      COUCH_DB_PASSWORD: budibase
+      COUCH_DB_URL: http://budibase:budibase@couchdb-service:5984
+      SENTRY_DSN: https://a34ae347621946bf8acded18e5b7d4b8@o420233.ingest.sentry.io/5338131
+      INTERNAL_API_KEY: budibase
+      REDIS_URL: redis-service:6379
+      REDIS_PASSWORD: budibase
+    depends_on:
+      - redis-service
+      - minio-service
+      - couch-init
+
+
+  minio-service:
+    restart: unless-stopped
+    image: minio/minio
+    volumes:
+      - ./data/data:/data
+    environment:
+      MINIO_ACCESS_KEY: budibase
+      MINIO_SECRET_KEY: budibase
+      MINIO_BROWSER: off
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+
+  proxy-service:
+    image: budibase/proxy
+    container_name: bbproxy
+    hostname: bbproxy
+    restart: unless-stopped
+    ports:
+      - 10000:10000
+    environment:
+      PROXY_RATE_LIMIT_WEBHOOKS_PER_SECOND: 10
+      PROXY_RATE_LIMIT_API_PER_SECOND: 20
+      APPS_UPSTREAM_URL: http://app-service:4002
+      WORKER_UPSTREAM_URL: http://worker-service:4003
+      MINIO_UPSTREAM_URL: http://minio-service:9000
+      COUCHDB_UPSTREAM_URL: http://couchdb-service:5984
+      WATCHTOWER_UPSTREAM_URL: http://watchtower-service:8080
+      RESOLVER: 127.0.0.11
+    depends_on:
+      - minio-service
+      - worker-service
+      - app-service
+      - couchdb-service
+
+
+  couchdb-service:
+    image: ibmcom/couchdb3
+    container_name: couchdb
+    hostname: couchdb
+    restart: unless-stopped
+    volumes:
+      - /opt/couchdb/data:/opt/couchdb/data
+    environment:
+      COUCHDB_PASSWORD: budibase
+      COUCHDB_USER: budibase
+
+
+  couch-init:
+    image: curlimages/curl
+    environment:
+      PUT_CALL: "curl -u budibase:budibase -X PUT couchdb-service:5984"
+    command: ["sh","-c","sleep 10 && $${PUT_CALL}/_users && $${PUT_CALL}/_replicator; fg;"]
+    depends_on:
+      - couchdb-service
+
+
+  redis-service:
+    restart: unless-stopped
+    image: redis
+    command: redis-server --requirepass budibase
+    volumes:
+      - ./data/data:/data
+
+
+  watchtower-service:
+    image: containrrr/watchtower
+    container_name: watchtower
+    hostname: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      WATCHTOWER_HTTP_API: true
+      WATCHTOWER_HTTP_API_TOKEN: budibase
+      WATCHTOWER_CLEANUP: true
+    command: --debug --http-api-update bbapps bbworker bbproxy
+    labels:
+      - com.centurylinklabs.watchtower.enable=false

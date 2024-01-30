@@ -1,0 +1,14 @@
+services:
+  stump:
+    image: aaronleopold/stump-preview # this will be `aaronleopold/stump` when it is released
+    container_name: stump
+    hostname: stump
+    restart: unless-stopped
+    volumes:
+      - ./data/config:/config
+      - ./data/data:/data
+    ports:
+      - 10801:10801
+    environment:
+      - PUID: 1000
+      - PGID: 1000

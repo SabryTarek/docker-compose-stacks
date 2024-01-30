@@ -1,0 +1,20 @@
+services:
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    hostname: mariadb
+    restart: always
+    ports:
+      - 3305:3306
+    volumes:
+      - ./mariadb:/var/lib/mysql
+      - /backup/databases/mariadb:/backup
+    environment:
+      MYSQL_ROOT_PASSWORD: mariadb
+      MYSQL_DATABASE: mariadb
+      MYSQL_USER: mariadb
+      MYSQL_PASSWORD: mariadb
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]       
+      retries: 3
+      timeout: 5s

@@ -1,0 +1,37 @@
+services:
+  tandoor:
+    image: vabene1111/recipes
+    container_name: recipes
+    hostname: recipes
+    restart: always
+    ports:
+      - 4269:8080
+    volumes:
+      - ./data/staticfiles:/opt/recipes/staticfiles
+      - ./data/mediafiles:/opt/recipes/mediafiles
+    enironemnt:
+      SECRET_KEYd: 9e6f2e2012c32f4c6ca7127a3c8a224e2a6e3bdc7b322df114aaa51d7edc7044
+      DB_ENGINEd: django.db.backends.postgresql
+      POSTGRES_HOSTd: postgres
+      POSTGRES_PORTd: 5432
+      POSTGRES_USERd: tandoor
+      POSTGRES_PASSWORDd: tandoor
+      POSTGRES_DBd: tandoor
+
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: unless-stopped
+    volumes:
+      - ./data/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: tandoor
+      POSTGRES_PASSWORD: tandoor
+      POSTGRES_DATABASE: tandoor
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres]
+      interval: 10s
+      timeout: 5s
+      retries: 5

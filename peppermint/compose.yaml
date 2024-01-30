@@ -1,0 +1,46 @@
+#Email: admin@admin.com
+## Password: 1234
+
+services:
+  peppermint:
+    image: pepperlabs/peppermint
+    container_name: peppermint
+    hostname: peppermint
+    restart: on-failure
+    expose:
+      - 5001
+    environment:
+      PORT: 5001
+      DB_USERNAME: peppermint
+      DB_PASSWORD: peppermint
+      DB_HOST: postgres
+      BASE_URL: https://peppermint.janafinancialqa.com
+    networks:
+      - npm
+      - peppermint
+    depends_on:
+      - postgres
+
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: always
+    volumes:
+      - ./data/data/db:/data/db
+    networks:
+      - peppermint
+    environment:
+      POSTGRES_USER: peppermint
+      POSTGRES_PASSWORD: peppermint
+      POSTGRES_DB: peppermint
+
+
+
+
+networks:
+  peppermint:
+    name: pappermint
+  npm:
+    external: true

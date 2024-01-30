@@ -1,0 +1,21 @@
+services:
+  speedtest:
+    image: henrywhitaker3/speedtest-tracker
+    container_name: speedtest
+    hostname: speedtest
+    restart: unless-stopped
+    expose:
+      - 80
+      - 443
+    volumes:
+      - ./data/config:/config
+    environment:
+      TZ: Africa/Cairo
+      PGID: 1000
+      PUID: 1000
+      OOKLA_EULA_GDPR: true
+    logging:
+      driver: json-file
+      options:
+        max-file: 10
+        max-size: 200k

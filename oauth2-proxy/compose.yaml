@@ -1,0 +1,46 @@
+services:
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy
+    container_name: oauth2-proxy
+    hostname: oauth2-proxy
+    restart: unless-stopped
+    ports:
+      - 4180:4180/tcp
+    volumes:
+      - ./data/oauth2-proxy.cfg:/oauth2-proxy.cfg
+    command: --config /oauth2-proxy.cfg
+    depends_on:
+      - dex
+      - httpbin
+
+
+  dex:
+    image: ghcr.io/dexidp/dex
+    container_name: dex
+    hostname: dex
+    restart: unless-stopped
+    ports:
+      - 4190:4190/tcp
+    volumes:
+      - ./data/dex.yaml:/dex.yaml
+    command: dex serve /dex.yaml
+    depends_on:
+      - etcd
+
+
+  httpbin:
+    image: kennethreitz/httpbin
+    container_name: httpbin
+    hostname: httpbin
+    ports:
+      - 8080:80/tcp
+
+
+  etcd:
+    image: gcr.io/etcd-development/etcd
+    container_name: etcd
+    hostname: etcd
+    entrypoint: /usr/local/bin/etcd
+    command:
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://etcd:2379

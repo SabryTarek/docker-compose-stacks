@@ -1,0 +1,84 @@
+services:
+  sl-app:
+    image: simplelogin/app:3.4.0
+    container_name: sl-app
+    hostname: sl-app
+    restart: always
+    ports:
+      - 7777:7777
+    volumes:
+      - ./sl:/sl
+      - ./sl/upload:/code/static/upload
+      - ./dkim.key:/dkim.key
+      - ./dkim.pub.key:/dkim.pub.key
+      - ./simplelogin.env:/code/.env
+
+
+
+  sl-migration:
+    image: simplelogin/app:3.4.0
+    container_name: sl-migration
+    hostname: sl-migration
+    volumes:
+      - ./sl:/sl
+      - ./sl/upload:/code/static/upload
+      - ./dkim.key:/dkim.key
+      - ./dkim.pub.key:/dkim.pub.key
+      - ./simplelogin.env:/code/.env
+    command: flask db upgrade
+
+
+  sl-init:
+    image: simplelogin/app:3.4.0
+    container_name: sl-init
+    hostname: sl-init
+    volumes:
+      - ./sl:/sl
+      - ./sl/upload:/code/static/upload
+      - ./dkim.key:/dkim.key
+      - ./dkim.pub.key:/dkim.pub.key
+      - ./simplelogin.env:/code/.env
+    command: python init_app.py
+
+
+  sl-email:
+    image: simplelogin/app:3.4.0
+    container_name: sl-email
+    hostname: sl-email
+    ports:
+      - 20381:20381
+    volumes:
+      - ./sl:/sl
+      - ./sl/upload:/code/static/upload
+      - ./dkim.key:/dkim.key
+      - ./dkim.pub.key:/dkim.pub.key
+      - ./simplelogin.env:/code/.env
+    command: python email_handler.py
+
+
+  sl-job-runner:
+    image: simplelogin/app:3.4.0
+    container_name: sl-job-runner
+    hostname: sl-job-runner
+    volumes:
+      - ./sl:/sl
+      - ./sl/upload:/code/static/upload
+      - ./dkim.key:/dkim.key
+      - ./dkim.pub.key:/dkim.pub.key
+      - ./simplelogin.env:/code/.env
+    command: python job_runner.py
+
+
+  sl-db:
+    image: postgres
+    container_name: sl-db
+    hostname: sl-db
+    restart: always
+    ports:
+      - 1432:5432
+    volumes:
+      - ./sl/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: mUqIN9KveJeetgRu5USbyPAcXoh0U35D/pdseD+leKtR
+      POSTGRES_USER: admin
+      POSTGRES_DB: simplelogin

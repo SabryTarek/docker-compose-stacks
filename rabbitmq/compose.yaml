@@ -1,0 +1,16 @@
+services:
+  rabbitmq:
+    image: rabbitmq # rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    hostname: rabbitmq
+    restart: unless-stopped
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./data/var/lib/rabbitmq:/var/lib/rabbitmq
+#        - ./data/var/log/rabbitmq:/var/log/rabbitmq
+        - ./data/etc/rabbitmq:/etc/rabbitmq
+    environment:
+        RABBITMQ_DEFAULT_USER: rabbitmq
+        RABBITMQ_DEFAULT_PASS: rabbitmq

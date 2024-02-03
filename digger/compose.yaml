@@ -1,0 +1,33 @@
+services:
+  digger:
+    image: ghcr.io/diggerhq/digger_backend
+    container_name: digger
+    hostname: digger
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      GITHUB_ORG: <your_github_org>
+      HOSTNAME: <your_public_digger_hostname>
+      BEARER_AUTH_TOKEN: $(openssl rand -base64 12)
+      DATABASE_URL: postgres://postgres:root@postgres:5432/postgres?sslmode=disable
+      HTTP_BASIC_AUTH: 1
+      HTTP_BASIC_AUTH_USERNAME: myorg
+      HTTP_BASIC_AUTH_PASSWORD: $(openssl rand -base64 12)
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: root
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5

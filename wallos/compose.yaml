@@ -1,0 +1,13 @@
+services:
+  wallos:
+    image: bellamy/wallos
+    container_name: wallos
+    hostname: wallos
+    restart: unless-stopped
+    ports:
+      - 8282:80/tcp
+    environment:
+      TZ: Egypt/Cairo
+    volumes:
+      - ./data/var/www/html/db:/var/www/html/db
+      - ./data/var/www/html/images/uploads/logos:/var/www/html/images/uploads/logos

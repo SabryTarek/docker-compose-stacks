@@ -1,0 +1,59 @@
+services:
+  seatable:
+    image: seatable/seatable-developer
+    container_name: seatable
+    hostname: seatable
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./data/shared:/shared
+    environment:
+      DB_HOST: db
+      DB_ROOT_PASSWD: PASSWORD
+      SEATABLE_SERVER_LETSENCRYPT: False # Default is False. Whether to use let's encrypt certificate.
+      SEATABLE_SERVER_HOSTNAME: example.seatable.com # Specifies your host name.
+      TIME_ZONE: Etc/UTC # Optional, default is UTC. Example: Europe/Berlin. Choices can be found here: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+    networks:
+      - seatable-net
+    depends_on:
+      - db
+      - memcached
+      - redis
+
+
+  db:
+    image: mariadb
+    container_name: seatable-mysql
+    hostname: seatable-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: PASSWORD
+      MYSQL_LOG_CONSOLE: true
+      MARIADB_AUTO_UPGRADE: 1
+    volumes:
+      - ./data/var/lib/mysql:/var/lib/mysql
+    networks:
+      - seatable-net
+
+
+  memcached:
+    image: memcached
+    container_name: seatable-memcached
+    hostname: seatable-memcached
+    entrypoint: memcached -m 256
+    networks:
+      - seatable-net
+
+
+  redis:
+    image: redis
+    container_name: seatable-redis
+    hostname: seatable-redis
+    networks:
+      - seatable-net
+
+
+
+
+networks:
+  seatable-net:

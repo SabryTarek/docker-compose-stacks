@@ -9,9 +9,7 @@ services:
     volumes:
       - ./data/traggo/data:/opt/traggo/data
     environment:
-    # the port the http server should use
       TRAGGO_PORT: 3030
-    # default username and password
       TRAGGO_DEFAULT_USER_NAME: traggo
       TRAGGO_DEFAULT_USER_PASS: traggo
 
